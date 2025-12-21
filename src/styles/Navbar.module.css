@@ -1,0 +1,28 @@
+.navbar {
+  background-color: #f8f9fa; /* Bootstrap light bg */
+  padding: 1rem 2rem;
+}
+
+.logo {
+  width: 120px;
+  height: auto;
+}
+
+.navItem {
+  font-weight: bold;
+  margin-left: 1rem;
+}
+
+.toggleButton {
+  border: none;
+}
+
+.button{
+    margin-right: 3rem;
+    background-color: orange;
+    border-radius:1rem;
+    border: none;
+    color: white;
+    width: 7rem;
+    height: 1.4rem;
+}

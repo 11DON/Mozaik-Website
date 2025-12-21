@@ -1,0 +1,40 @@
+.features {
+    padding: 50px 0;
+    text-align: center
+}
+
+.featuresGrid {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    margin-top: 22px
+}
+
+.featureCard {
+    display: flex;
+    flex-direction: row;
+    background: #ADADAF;
+    padding: 35px 26px;
+    border-radius: 10px;
+    width: 230px
+}
+
+.featureIcon {
+    font-size: 28px;
+    color: white;
+}
+
+.featureTitle {
+    color: white;
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.col {
+    margin-left: 4%;
+        margin-right: 4%;
+
+    width: 2px;
+    height: 2rem;
+    background-color: white;
+}
