@@ -1,10 +1,15 @@
 .navbar {
-  background-color: #f8f9fa; /* Bootstrap light bg */
+  background-color: #f8f9fa;
   padding: 1rem 2rem;
 }
 
+.navbarFix {
+  position: relative;
+  z-index: 1000;
+}
+
 .logo {
-  width: 120px;
+  width: 150px;
   height: auto;
 }
 
@@ -17,12 +22,15 @@
   border: none;
 }
 
-.button{
-    margin-right: 3rem;
-    background-color: orange;
-    border-radius:1rem;
-    border: none;
-    color: white;
-    width: 7rem;
-    height: 1.4rem;
+.button {
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+  margin-right: 3rem;
+  background-color: orange;
+  border-radius: 1rem;
+  border: none;
+  color: white;
+  width: 8rem;
+  padding: auto;  
 }

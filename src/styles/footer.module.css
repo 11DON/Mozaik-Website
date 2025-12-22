@@ -1,0 +1,61 @@
+/* Footer module styles - accent top border and enhancements */
+.footer {
+  border-top: 4px solid #ff7a00; /* orange top border */
+  padding: 2.5rem 1rem;
+    background-color: #f9f9f9;
+}
+
+.footer p {
+  color: #6b6b6b;
+  line-height: 1.7;
+  margin-bottom: 0.6rem;
+  text-align: start;
+}
+
+.footer h5 {
+  font-size: 1.5rem;
+  text-align: start;
+  font-weight: 700;
+  color: #222222;
+  margin-bottom: 0.8rem;
+}
+
+/* Logo container and image sizing */
+.logo {
+  display: inline-flex;
+  align-items: center;
+}
+
+.logoImg {
+  max-width: 160px;
+  height: auto;
+  display: block;
+}
+
+.footer a {
+  font-size: 1.2rem;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+
+.footer a:hover {
+  color: #ff7a00;
+  transform: translateX(4px);
+  text-decoration: underline;
+}
+
+/* subtle spacing tweak for small screens */
+@media (max-width: 576px) {
+  .footer {
+    padding: 1.25rem 0.75rem;
+  }
+
+  .logoImg {
+    max-width: 100px;
+  }
+
+  .footer h5 {
+    font-size: 1rem;
+  }
+}

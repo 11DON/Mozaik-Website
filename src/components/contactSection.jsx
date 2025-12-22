@@ -1,12 +1,21 @@
 import styles from "/src/styles/contact.module.css";
-
+import { motion } from "framer-motion";
 export default function ContactSection() {
   return (
     <section className={styles.contact}>
       <div className={styles.contactInner}>
         <h2>احصل علي استشارة مجانية</h2>
-        <p className={styles.contactLead}>يرجى ترك رسالة لنا تحتوي على تفاصيل المشروع، وسنرسل لك لتحديد موعد استشارة مجانية</p>
+        <p className={styles.contactLead}>
+          يرجى ترك رسالة لنا تحتوي على تفاصيل المشروع، وسنرسل لك لتحديد موعد
+          استشارة مجانية
+        </p>
 
+        
+{/* This is contact form to use it you need to: 
+1- https://myaccount.google.com/apppasswords
+2- Generate an app password for "Mail" and "Other (Custom name)".
+3- Use the generated password in your backend email sending service.
+*/}
         <form
           className={styles.contactForm}
           onSubmit={async (e) => {
@@ -18,19 +27,22 @@ export default function ContactSection() {
             const project = e.target.project.value;
 
             try {
-              const response = await fetch("http://localhost:5137/api/send-email", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  user_name: name,
-                  service,
-                  city,
-                  phone,
-                  project,
-                }),
-              });
+              const response = await fetch(
+                "http://localhost:5137/api/send-email",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    user_name: name,
+                    service,
+                    city,
+                    phone,
+                    project,
+                  }),
+                }
+              );
 
               const data = await response.json();
               if (response.ok) {
@@ -44,18 +56,56 @@ export default function ContactSection() {
             }
           }}
         >
-          <div className={styles.row}>
-            <input name="name" placeholder="الاسم" />
-            <input name="service" placeholder="الخدمة المطلوبة" />
-          </div>
-          <div className={styles.row}>
-            <input name="city" placeholder="المدينة" />
-            <input name="phone" placeholder="رقم الجوال" />
-          </div>
-          <textarea name="project" placeholder="وصف المشروع" />
-          <button type="submit" className={styles.contactButton}>ارسل طلبك</button>
-        </form>
+          <motion.div
+            viewport={{ once: true }}
+            whileInView={{
+              opacity: [0, 1],
+              x: [100, 0],
+              transition: { duration: 0.6 },
+            }}
+          >
+            <div className={styles.row}>
+              <input name="name" placeholder="الاسم" />
+              <input name="service" placeholder="الخدمة المطلوبة" />
+            </div>
+          </motion.div>
 
+          <motion.div
+            viewport={{ once: true }}
+            whileInView={{
+              opacity: [0, 1],
+              x: [100, 0],
+              transition: { duration: 1 },
+            }}
+          >
+            <div className={styles.row}>
+              <input name="city" placeholder="المدينة" />
+              <input name="phone" placeholder="رقم الجوال" />
+            </div>
+          </motion.div>
+          <motion.div
+            viewport={{ once: true }}
+            whileInView={{
+              opacity: [0, 1],
+              x: [100, 0],
+              transition: { duration: 1.3 },
+            }}
+          >
+            <textarea name="project" placeholder="وصف المشروع" />
+          </motion.div>
+          <motion.div
+            viewport={{ once: true }}
+            whileInView={{
+              opacity: [0, 1],
+              y: [50, 0],
+              transition: { duration: 1.3 },
+            }}
+          >
+            <button type="submit" className={styles.contactButton}>
+              ارسل طلبك
+            </button>
+          </motion.div>
+        </form>
       </div>
     </section>
   );

@@ -1,0 +1,27 @@
+/* Global styles — applies the loaded Readex Pro font across the site */
+:root {
+  --font-family: 'Readex Pro', sans-serif;
+}
+
+html, body, #root {
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #222;
+  margin: 0;
+}
+
+body {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family);
+  font-weight: 600;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

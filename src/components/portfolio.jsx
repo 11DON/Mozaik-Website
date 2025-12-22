@@ -27,7 +27,10 @@ export default function Portfolio() {
               className={styles.portfolioItem}
               whileHover={{ scale: 1.03 }}
             >
-              <img src={item.img} alt={`project ${i}`} />
+              <div className={styles.imageWrapper}>
+<img src={item.img} alt={`project ${i}`} />
+              </div>
+              
             </motion.div>
           </Link>
         ))}

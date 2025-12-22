@@ -2,7 +2,7 @@ import blackLogo from "/src/assets/mLogoB.png";
 import styles from "/src/styles/Navbar.module.css";
 export default function Navbar() {
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+<nav className={`navbar navbar-expand-lg navbar-light bg-light ${styles.navbarFix}`}>
             <div className="container">
                 <button
                     className="navbar-toggler"
