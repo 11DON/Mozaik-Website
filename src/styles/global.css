@@ -1,6 +1,28 @@
 /* Global styles — applies the loaded Readex Pro font across the site */
 :root {
   --font-family: 'Readex Pro', sans-serif;
+  
+  /* Brand colors */
+  --color-primary: rgba(224,143,76,1);
+  --color-primary-light: #f9a85d;
+  --color-primary-dark: #d96a0f;
+
+  /* Neutrals */
+  --color-white: #ffffff;
+  --color-black: #111111;
+  --color-gray-100: #f6f7f8;
+  --color-gray-300: #cccccc;
+  --color-gray-600: #666666;
+
+  /* Text */
+  --color-text-primary: #111111;
+  --color-text-secondary: #666666;
+
+  /* States */
+  --color-success: #2aa55a;
+  --color-error: #e53935;
+
+
 }
 
 html, body, #root {

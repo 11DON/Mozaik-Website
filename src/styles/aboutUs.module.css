@@ -57,7 +57,7 @@
 .moreBtn {
     display: inline-block;
     margin-top: 28px;
-    background: #f58220;
+    background: var(--color-primary);
     color: #fff;
     border: none;
     padding: 12px 28px;

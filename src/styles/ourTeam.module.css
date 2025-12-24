@@ -1,0 +1,110 @@
+
+/* Our team section */
+.ourTeamSection {
+  border-radius: 28px;
+  width: 70%;
+  padding: 40px 30px;
+  background: #f6f7f8;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.meetTeamTitle h2 {
+  font-size: 2.2rem;
+  margin-bottom: 14px;
+  color: #222;
+}
+
+.meetTeamTitle p {
+  color: #7d7d7d;
+  margin-bottom: 3rem;
+}
+
+.teamMembers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+    justify-items: center; /* ⭐ CENTER CARDS */
+
+  margin-top: 20px;
+}
+
+.teamCard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px 18px;
+  box-shadow: 0 6px 18px rgba(24, 39, 75, 0.06);
+  position: relative;
+  min-height: 180px;
+  width: 69%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatarWrap {
+  margin-top: -48px;
+}
+
+.teamAvatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.teamName {
+  font-size: 1rem;
+  margin-top: 10px;
+  font-weight: 600;
+  color: #111;
+}
+
+.teamRole {
+  color: #9b9b9b;
+  font-size: 0.85rem;
+  margin-top: 6px;
+}
+
+.teamDesc {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-top: 10px;
+  text-align: center;
+  max-width: 220px;
+}
+
+@media (max-width: 992px) {
+  .teamMembers {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .teamCard {
+    padding: 18px 14px;
+    min-height: 160px;
+  }
+}
+
+@media (max-width: 576px) {
+  .teamMembers {
+    grid-template-columns: 1fr;
+  }
+
+  .ourTeamSection {
+    padding: 30px 12px;
+  }
+
+  .teamCard {
+    padding: 16px 12px;
+  }
+
+  .teamAvatar {
+    width: 72px;
+    height: 72px;
+  }
+}

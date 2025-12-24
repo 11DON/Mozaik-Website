@@ -5,7 +5,9 @@ import HomePage from "./pages/homePage.jsx";
 import Portfolio from "./components/portfolio";
 import Footer from "./components/footer.jsx";
 import WhoWeArePage from "./pages/whoWeArePage.jsx";
-
+import Services from "./pages/services.jsx";
+import OurWork from "./pages/ourWork.jsx";
+import Carrers from "./pages/carrers.jsx";
 function App() {
   return (
     <>
@@ -15,6 +17,10 @@ function App() {
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/portfolio/:id" element={<Portfolio />} />
         <Route path="/WhoWeArePage" element={<WhoWeArePage />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/ourWork" element={<OurWork />} />
+        <Route path="/carrers" element={<Carrers />} />
+
       </Routes>
       <Footer />
 

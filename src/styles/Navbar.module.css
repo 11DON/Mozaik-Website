@@ -27,7 +27,7 @@
   cursor: pointer;
   text-align: center;
   margin-right: 3rem;
-  background-color: orange;
+  background-color: var(--color-primary);
   border-radius: 1rem;
   border: none;
   color: white;

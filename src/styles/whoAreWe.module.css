@@ -1,0 +1,160 @@
+.missionVision {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px;
+}
+
+.missionVision h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+.missionVision p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: gray;
+  max-width: 800px;
+  text-align: center;
+}
+
+.mission {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 40px;
+}
+.missionImageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.missionImage {
+  width: 60%;
+  border-radius: 10px;
+}
+.missionContent {
+  max-width: 600px;
+  width: 100%;
+  justify-content: start;
+  margin-left: 10rem;
+  align-self: flex-end;
+  text-align: right;
+}
+
+.missionContent h3 {
+  text-align: right;
+
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: #444;
+}
+.missionContent p {
+  text-align: right;
+  font-size: 1.8rem;
+  line-height: 1.5;
+  color: #666;
+}
+
+.moreBtn {
+  align-self: flex-start;
+  display: inline-block;
+  margin-top: 28px;
+background: rgba(224,143,76,1);
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  font-size: 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(245, 130, 32, 0.18);
+}
+
+/* Meet the team  */
+.teamSection {
+  background-color: grey;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50px 20px;
+  text-align: center;
+}
+
+.teamSection h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.meetTeamTitle {
+  text-align: center;
+  max-width: 100%;
+  margin-bottom: 40px;
+}
+
+/* Tablets */
+@media (max-width: 992px) {
+  .missionVision {
+    padding: 40px 20px;
+  }
+
+  .missionVision h2 {
+    font-size: 2.2rem;
+  }
+
+  .missionVision p {
+    font-size: 1.1rem;
+  }
+
+  .mission {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .missionImage {
+    width: 70%;
+  }
+
+  .missionContent {
+    width: 100%;
+    text-align: center;
+  }
+
+  .missionContent h3,
+  .missionContent p {
+    text-align: center;
+  }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  .missionVision {
+    padding: 30px 15px;
+  }
+
+  .missionVision h2 {
+    font-size: 1.9rem;
+  }
+
+  .missionVision p {
+    font-size: 1rem;
+  }
+
+  .missionImage {
+    width: 90%;
+  }
+
+  .missionContent h3 {
+    font-size: 1.6rem;
+  }
+
+  .missionContent p {
+    font-size: 1.2rem;
+  }
+
+  .moreBtn {
+    font-size: 1.2rem;
+    padding: 10px 22px;
+  }
+}
+

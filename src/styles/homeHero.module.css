@@ -90,7 +90,7 @@
 
 .cta {
   position: relative;
-  background: #f58220;
+  background: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 2rem;

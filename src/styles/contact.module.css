@@ -60,7 +60,7 @@
 } 
 
 .contactButton {
-    background: #f58220;
+    background: var(--color-primary);
     color: #fff;
     padding: 14px 18px;
     border-radius: 10px;
