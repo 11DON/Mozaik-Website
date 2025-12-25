@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HR Admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>HR Admin Panel</h1>
+
+  <!-- Login Section -->
+  <div id="login-section">
+    <h2>Login</h2>
+    <input id="email" type="email" placeholder="Email"><br>
+    <input id="password" type="password" placeholder="Password"><br>
+    <button onclick="login()">Login</button>
+    <p id="login-msg"></p>
+  </div>
+
+  <!-- Job Management Section -->
+  <div id="job-section" style="display:none;">
+    <h2>Create Job</h2>
+    <input id="title" placeholder="Job Title"><br>
+    <input id="type" placeholder="Job Type"><br>
+    <input id="qualifications" placeholder="Qualifications (comma separated)"><br>
+    <textarea id="description" placeholder="Job Description"></textarea><br>
+    <button onclick="createJob()">Create Job</button>
+
+    <h2>Existing Jobs</h2>
+    <ul id="jobs-list"></ul>
+  </div>
+
+  <script>
+    let token = "";
+
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        token = data.token;
+        document.getElementById("login-section").style.display = "none";
+        document.getElementById("job-section").style.display = "block";
+        loadJobs();
+      } else {
+        document.getElementById("login-msg").innerText = data.message;
+      }
+    }
+
+    async function loadJobs() {
+      const res = await fetch("/api/jobs", {
+        headers: { "Authorization": "Bearer " + token }
+      });
+      const jobs = await res.json();
+
+      const list = document.getElementById("jobs-list");
+      list.innerHTML = "";
+      jobs.forEach(job => {
+        const li = document.createElement("li");
+        li.textContent = `${job.title} (${job.jobType}) - ${job.isActive ? "Active" : "Inactive"}`;
+        const deactivateBtn = document.createElement("button");
+        deactivateBtn.textContent = "Deactivate";
+        deactivateBtn.onclick = () => deactivateJob(job.id);
+        li.appendChild(deactivateBtn);
+        list.appendChild(li);
+      });
+    }
+
+    async function createJob() {
+      const title = document.getElementById("title").value;
+      const type = document.getElementById("type").value;
+      const qualifications = document.getElementById("qualifications").value.split(",");
+      const description = document.getElementById("description").value;
+
+      const res = await fetch("/api/jobs", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token 
+        },
+        body: JSON.stringify({ title, jobType: type, qualifications, description })
+      });
+
+      if (res.ok) {
+        loadJobs();
+        alert("Job created successfully!");
+      } else {
+        alert("Failed to create job");
+      }
+    }
+
+    async function deactivateJob(id) {
+      await fetch(`/api/jobs/${id}/deactivate`, {
+        method: "PATCH",
+        headers: { "Authorization": "Bearer " + token }
+      });
+      loadJobs();
+    }
+  </script>
+</body>
+</html>
