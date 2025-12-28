@@ -8,11 +8,14 @@ import WhoWeArePage from "./pages/whoWeArePage.jsx";
 import Services from "./pages/services.jsx";
 import OurWork from "./pages/ourWork.jsx";
 import Carrers from "./pages/carrers.jsx";
+import Contact from "./pages/contactPage.jsx";
+import HRAdmin from "./pages/hr.jsx";
 function App() {
   return (
     <>
       <Navbar />
       <Routes>
+        <Route path="/HR-Admin" element={<HRAdmin/>}/>
         <Route path="/" element={<HomePage />} />
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/portfolio/:id" element={<Portfolio />} />
@@ -20,10 +23,9 @@ function App() {
         <Route path="/services" element={<Services />} />
         <Route path="/ourWork" element={<OurWork />} />
         <Route path="/carrers" element={<Carrers />} />
-
+        ,<Route path="/contact" element={<Contact />} />
       </Routes>
       <Footer />
-
     </>
   );
 }

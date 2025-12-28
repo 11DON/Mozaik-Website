@@ -17,7 +17,7 @@ export default function Navbar() {
                     <span className="navbar-toggler-icon"></span>
                 </button>
 
-                    <button className={styles.button}>اتصل بنا</button>
+                  <Link to="/contact"> <button className={styles.button} >اتصل بنا</button></Link> 
 
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mx-auto mb-2 mb-lg-0">
@@ -31,9 +31,9 @@ export default function Navbar() {
                         <li className="nav-item">
                             <Link className="nav-link active" to="/WhoWeArePage">من نحن</Link>
                         </li>
-                        <li className="nav-item">
+                        {/* <li className="nav-item">
                             <a className="nav-link" href="#">أخبار</a>
-                        </li>
+                        </li> */}
                         <li className="nav-item">
                             <Link className="nav-link active" to="/ourWork">اعمالنا</Link>
                         </li>
@@ -44,7 +44,6 @@ export default function Navbar() {
                        
                     </ul>
                 <a className="navbar-brand" href="#"><img src={blackLogo} alt="" className={styles.logo}/></a>
-
                 </div>
             </div>
         </nav>

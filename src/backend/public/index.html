@@ -64,7 +64,7 @@
       list.innerHTML = "";
       jobs.forEach(job => {
         const li = document.createElement("li");
-        li.textContent = `${job.title} (${job.jobType}) - ${job.isActive ? "Active" : "Inactive"}`;
+        li.textContent = `${job.title} (${job.job_type}) - ${job.is_active ? "Active" : "Inactive"}`;
         const deactivateBtn = document.createElement("button");
         deactivateBtn.textContent = "Deactivate";
         deactivateBtn.onclick = () => deactivateJob(job.id);

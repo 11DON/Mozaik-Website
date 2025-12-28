@@ -19,20 +19,13 @@ dotenv.config();
 
 const app = express();
 const allowedOrigins = [
-  'http://localhost:5137',
-  'https://yourdomain.com',
+  'http://localhost:5173',  // your frontend
+  'http://localhost:5137',  // optional for testing
+  'https://yourdomain.com', // production
 ];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
+app.use(cors());
+
 app.use(bodyParser.json());
 
 // Serve HR admin page - MUST come before API routes

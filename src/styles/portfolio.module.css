@@ -1,3 +1,5 @@
+
+
 .portfolio {
   padding: 60px 0;
   text-align: center
@@ -32,3 +34,7 @@
 
 
 
+@media (max-width: 720px) {
+  .portfolioGrid {
+    grid-template-columns: 1fr;
+  }}

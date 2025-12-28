@@ -2,7 +2,7 @@ import styles from "/src/styles/contact.module.css";
 import { motion } from "framer-motion";
 export default function ContactSection() {
   return (
-    <section className={styles.contact}>
+    <section className={styles.contact} id="contact">
       <div className={styles.contactInner}>
         <h2>احصل علي استشارة مجانية</h2>
         <p className={styles.contactLead}>

@@ -12,6 +12,8 @@ const items = [
   { img: p2, link: "/portfolio/2" },
   { img: p3, link: "/portfolio/3" },
 ];
+
+
 export default function Portfolio() {
   return (
     <section className={styles.portfolio}>
@@ -28,13 +30,11 @@ export default function Portfolio() {
               whileHover={{ scale: 1.03 }}
             >
               <div className={styles.imageWrapper}>
-<img src={item.img} alt={`project ${i}`} />
+                <img src={item.img} alt={`project ${i}`} />
               </div>
-              
             </motion.div>
           </Link>
         ))}
-
       </div>
     </section>
   );

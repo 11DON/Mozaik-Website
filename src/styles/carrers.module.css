@@ -1,0 +1,103 @@
+.page {
+  direction: rtl;
+  font-family: "Cairo", sans-serif;
+  padding: 40px;
+  background: #fff;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  color: #e07a2f;
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.header p {
+  color: #666;
+  max-width: 600px;
+  margin: auto;
+}
+
+/* Layout */
+.content {
+  display: flex;
+  gap: 30px;
+}
+
+/* Jobs grid */
+.jobsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+  flex: 1;
+}
+
+/* Job card */
+.jobCard {
+  background: #fff;
+  border-radius: 14px;
+  padding: 25px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+
+.jobCard h3 {
+  margin-bottom: 12px;
+  color: #222;
+}
+
+.meta {
+  display: flex;
+  gap: 15px;
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 15px;
+}
+
+.desc {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* Button */
+.applyBtn {
+  background: #e07a2f;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.applyBtn:hover {
+  background: #cc6a24;
+}
+
+/* Filters */
+.filters {
+  width: 260px;
+  background: #fafafa;
+  padding: 20px;
+  border-radius: 14px;
+}
+
+.filters h3 {
+  margin-bottom: 15px;
+}
+
+.filters label {
+  font-size: 14px;
+  display: block;
+  margin-top: 15px;
+}
+
+.filters select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+}

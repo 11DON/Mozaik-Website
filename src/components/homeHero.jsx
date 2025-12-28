@@ -81,6 +81,12 @@ export default function HomeHero() {
             transition={{ duration: 0.9, ease: "easeOut" }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              const target = document.getElementById("contact");
+              if (target) {
+                target.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
           >
             تواصل معنا الآن
           </motion.button>

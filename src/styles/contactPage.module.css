@@ -1,0 +1,149 @@
+.contact {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    background-image: url("/src/assets/contactbg.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+/* Overlay */
+.contact::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: var(--color-primary);
+    opacity: 0.5;
+    z-index: 1;
+}
+/* White container wrapping form + info */
+.contactInner {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    z-index: 2;
+    padding: 2rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap; /* stack on smaller screens */
+}
+
+.contactInner h2{
+    text-align: center;
+    padding-bottom: 2rem;
+}
+/* Each column */
+.contactColumn {
+    flex: 1;
+    min-width: 300px; /* responsive */
+}
+
+/* Contact info styling */
+.contactInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-size: 1rem;
+}
+
+/* Form styling */
+.contactForm {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.contactForm .row {
+    display: flex;
+    gap: 16px;
+}
+
+.contactForm input,
+.contactForm textarea {
+    padding: 16px 18px;
+    border-radius: 8px;
+    border: 1px solid #e6e6e6;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(15, 15, 15, 0.04);
+    font-size: 1rem;
+    color: #222;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    text-align: right;
+}
+
+.contactForm textarea {
+    min-height: 200px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.contactForm input:focus,
+.contactForm textarea:focus {
+    border-color: #f58220;
+    box-shadow: 0 8px 24px rgba(245, 130, 32, 0.12);
+}
+
+.contactButton {
+    background: var(--color-primary);
+    color: #fff;
+    padding: 16px 20px;
+    border-radius: 10px;
+    border: none;
+    width: 100%;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: block;
+}
+
+/* Contact info styling */
+.contactInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    gap: 16px;
+    font-size: 1rem;
+}
+
+.contactInfo h3 {
+    text-align: end;
+    margin-bottom: 1rem;
+}
+.contactInfo p {
+    display: flex;
+    align-items: flex-start; /* align icon with text */
+    text-align: right; /* keep Arabic text aligned right */
+    justify-content: space-between; /* push items to the right */
+}
+
+.contactInfo p span {
+    display: flex;
+    flex-direction: column; /* stack lines vertically */
+    line-height: 1.4;
+}
+
+.contactInfo iframe {
+    text-align: end;
+    margin-bottom: 1rem;
+}
+
+
+
+@media (max-width: 768px) {
+    .contactInner {
+        flex-direction: column; /* stack columns */
+    }
+}

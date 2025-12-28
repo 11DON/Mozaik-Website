@@ -6,7 +6,7 @@ const services = [
     id: 1,
     title: "اعمال التشطيبات",
     img: "/src/assets/s1.png",
-    des: "ترميم وتطوير الفلل والعمائر السكنية، دراسات رفع القيمة العقارية وتحسين العائد الاستثماري",
+    des: "ترميم وتطوير الفلل والعمائر السكنية، دراسات رفع القيمة العقارية وتحسين العائد الاستثمارينضمن تنفيذ مشاريعكم بسلاسة وفاعلية، من التخطيط الأولي وحتى التسليم النهائي، وفقاً لأعلى المعايير.",
     displace: 70,
   },
   {
@@ -32,9 +32,6 @@ const services = [
   },
 ];
 
-
-
-
 const titleVariants = {
   rest: { y: 0 },
   hover: {
@@ -58,7 +55,6 @@ export default function Services() {
   return (
     <section className={styles.services}>
       <h1>خدماتنا</h1>
-
       <div className={styles.servicesGrid}>
         {services.map((s, i) => (
           <motion.div
@@ -66,7 +62,11 @@ export default function Services() {
             className={styles.serviceCard}
             initial={{ opacity: 0, x: -s.displace }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.64, delay: i * 0.14, ease: [0.2, 0.8, 0.2, 1] }}
+            transition={{
+              duration: 0.64,
+              delay: i * 0.14,
+              ease: [0.2, 0.8, 0.2, 1],
+            }}
             viewport={{ once: true, amount: 0.25 }}
           >
             <motion.div
@@ -89,9 +89,7 @@ export default function Services() {
               </motion.h4>
 
               <motion.div className={styles.serviceOverlay}>
-                <motion.div
-                  className={styles.overlayInner}
-                >
+                <motion.div className={styles.overlayInner}>
                   <motion.p
                     className={styles.serviceDescription}
                     variants={descVariants}
