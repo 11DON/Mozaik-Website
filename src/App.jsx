@@ -10,11 +10,13 @@ import OurWork from "./pages/ourWork.jsx";
 import Carrers from "./pages/carrers.jsx";
 import Contact from "./pages/contactPage.jsx";
 import HRAdmin from "./pages/hr.jsx";
+import JobApplication from "./pages/jobApplication.jsx";
 function App() {
   return (
     <>
       <Navbar />
       <Routes>
+        <Route path="/carrers/:id" element={<JobApplication />} />
         <Route path="/HR-Admin" element={<HRAdmin/>}/>
         <Route path="/" element={<HomePage />} />
         <Route path="/portfolio" element={<Portfolio />} />

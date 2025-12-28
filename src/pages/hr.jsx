@@ -1,19 +1,20 @@
 // HRAdmin.jsx
 import React, { useState, useEffect } from "react";
-import { Briefcase, Trash2, Edit, Users } from "lucide-react";
+import { Briefcase, Trash2, Users } from "lucide-react";
 import styles from "../styles/hr.module.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5137/api";
 
 const HRAdmin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [token, setToken] = useState("");
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [loginError, setLoginError] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
   
   const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
-  const [activeTab, setActiveTab] = useState("jobs"); // jobs or applications
+  const [activeTab, setActiveTab] = useState("jobs");
+  const [loading, setLoading] = useState(true);
   
   const [jobForm, setJobForm] = useState({
     title: "",
@@ -22,59 +23,113 @@ const HRAdmin = () => {
     description: "",
   });
 
+  // ==================== AUTH HELPER ====================
+  const authenticatedFetch = async (url, options = {}) => {
+    const token = localStorage.getItem("authToken");
+    
+    if (!token) {
+      console.error("No authentication token found");
+      handleLogout();
+      return null;
+    }
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          ...options.headers,
+        }
+      });
+
+      // Handle unauthorized - token expired or invalid
+      if (response.status === 401) {
+        console.error("Token invalid or expired");
+        handleLogout();
+        return null;
+      }
+
+      return response;
+    } catch (error) {
+      console.error("Fetch error:", error);
+      throw error;
+    }
+  };
+
+  // ==================== INITIAL LOAD ====================
   useEffect(() => {
-    const savedToken = localStorage.getItem("hrToken");
-    if (savedToken) {
-      setToken(savedToken);
+    const token = localStorage.getItem("authToken");
+    if (token) {
       setIsLoggedIn(true);
-      loadJobs(savedToken);
-      loadApplications(savedToken);
+      loadInitialData();
+    } else {
+      setLoading(false);
     }
   }, []);
+
+  const loadInitialData = async () => {
+    try {
+      await Promise.all([loadJobs(), loadApplications()]);
+    } catch (error) {
+      console.error("Failed to load initial data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ==================== AUTH ====================
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoginError("");
+    setLoginLoading(true);
+
     try {
       const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginData),
+        body: JSON.stringify(loginData)
       });
-
+      
       const data = await response.json();
-
+      
       if (response.ok) {
-        setToken(data.token);
+        localStorage.setItem("authToken", data.token);
         setIsLoggedIn(true);
-        localStorage.setItem("hrToken", data.token);
-        setLoginError("");
-        loadJobs(data.token);
-        loadApplications(data.token);
+        setLoginData({ email: "", password: "" });
+        loadInitialData();
       } else {
         setLoginError(data.message || "فشل تسجيل الدخول");
       }
     } catch (error) {
+      console.error("Login failed:", error);
       setLoginError("خطأ في الاتصال بالخادم");
+    } finally {
+      setLoginLoading(false);
     }
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    setToken("");
-    localStorage.removeItem("hrToken");
+    localStorage.removeItem("authToken");
+    setJobs([]);
+    setApplications([]);
   };
 
   // ==================== JOBS ====================
-  const loadJobs = async (authToken) => {
+  const loadJobs = async () => {
     try {
-      const response = await fetch(`${API_URL}/jobs`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-      const data = await response.json();
-      setJobs(data);
+      // Jobs endpoint is public, no auth needed
+      const response = await fetch(`${API_URL}/jobs`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setJobs(data);
+      } else {
+        console.error("Failed to load jobs");
+      }
     } catch (error) {
-      console.error("Failed to load jobs:", error);
+      console.error("Error loading jobs:", error);
     }
   };
 
@@ -84,32 +139,38 @@ const HRAdmin = () => {
 
   const createJob = async (e) => {
     e.preventDefault();
+    
+    if (!jobForm.title || !jobForm.jobType || !jobForm.description) {
+      alert("يرجى ملء جميع الحقول المطلوبة");
+      return;
+    }
+
     try {
       const qualificationsArray = jobForm.qualifications
         .split(",")
         .map((q) => q.trim())
         .filter((q) => q);
 
-      const response = await fetch(`${API_URL}/jobs`, {
+      const response = await authenticatedFetch(`${API_URL}/jobs`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({
           ...jobForm,
           qualifications: qualificationsArray,
         }),
       });
 
+      if (!response) return;
+
       if (response.ok) {
         alert("تم إنشاء الوظيفة بنجاح!");
         setJobForm({ title: "", jobType: "", qualifications: "", description: "" });
-        loadJobs(token);
+        loadJobs();
       } else {
-        alert("فشل في إنشاء الوظيفة");
+        const error = await response.json();
+        alert(error.message || "فشل في إنشاء الوظيفة");
       }
     } catch (error) {
+      console.error("Error creating job:", error);
       alert("خطأ في الخادم");
     }
   };
@@ -118,13 +179,21 @@ const HRAdmin = () => {
     if (!window.confirm("هل أنت متأكد من إيقاف هذه الوظيفة؟")) return;
 
     try {
-      await fetch(`${API_URL}/jobs/${id}/deactivate`, {
+      const response = await authenticatedFetch(`${API_URL}/jobs/${id}/deactivate`, {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
       });
-      loadJobs(token);
+
+      if (!response) return;
+
+      if (response.ok) {
+        alert("تم إيقاف الوظيفة بنجاح");
+        loadJobs();
+      } else {
+        alert("فشل في إيقاف الوظيفة");
+      }
     } catch (error) {
-      alert("فشل في إيقاف الوظيفة");
+      console.error("Error deactivating job:", error);
+      alert("خطأ في الخادم");
     }
   };
 
@@ -132,46 +201,64 @@ const HRAdmin = () => {
     if (!window.confirm("هل أنت متأكد من حذف هذه الوظيفة؟ سيتم حذف جميع الطلبات المرتبطة بها.")) return;
 
     try {
-      await fetch(`${API_URL}/jobs/${id}`, {
+      const response = await authenticatedFetch(`${API_URL}/jobs/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
       });
-      loadJobs(token);
+
+      if (!response) return;
+
+      if (response.ok) {
+        alert("تم حذف الوظيفة بنجاح");
+        loadJobs();
+      } else {
+        alert("فشل في حذف الوظيفة");
+      }
     } catch (error) {
-      alert("فشل في حذف الوظيفة");
+      console.error("Error deleting job:", error);
+      alert("خطأ في الخادم");
     }
   };
 
   // ==================== APPLICATIONS ====================
-  const loadApplications = async (authToken) => {
+  const loadApplications = async () => {
     try {
-      const response = await fetch(`${API_URL}/applications`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-      const data = await response.json();
-      setApplications(data);
+      const response = await authenticatedFetch(`${API_URL}/applications`);
+      
+      if (!response) return;
+      
+      if (response.ok) {
+        const data = await response.json();
+        setApplications(data);
+      } else {
+        console.error("Failed to load applications");
+      }
     } catch (error) {
-      console.error("Failed to load applications:", error);
+      console.error("Error loading applications:", error);
     }
   };
 
   const updateApplicationStatus = async (id, status) => {
     try {
-      await fetch(`${API_URL}/applications/${id}/status`, {
+      const response = await authenticatedFetch(`${API_URL}/applications/${id}/status`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({ status }),
       });
-      loadApplications(token);
+
+      if (!response) return;
+
+      if (response.ok) {
+        alert("تم تحديث حالة الطلب بنجاح");
+        loadApplications();
+      } else {
+        alert("فشل في تحديث حالة الطلب");
+      }
     } catch (error) {
-      alert("فشل في تحديث حالة الطلب");
+      console.error("Error updating application status:", error);
+      alert("خطأ في الخادم");
     }
   };
 
-  // ==================== RENDER ====================
+  // ==================== RENDER LOGIN ====================
   if (!isLoggedIn) {
     return (
       <div className={styles.loginContainer}>
@@ -179,7 +266,7 @@ const HRAdmin = () => {
           <h1 className={styles.loginTitle}>لوحة تحكم الموارد البشرية</h1>
           <p className={styles.loginSubtitle}>تسجيل الدخول</p>
           
-          <div className={styles.loginForm}>
+          <form onSubmit={handleLogin} className={styles.loginForm}>
             <div className={styles.formGroup}>
               <label>البريد الإلكتروني</label>
               <input
@@ -188,6 +275,8 @@ const HRAdmin = () => {
                 value={loginData.email}
                 onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                 className={styles.input}
+                required
+                disabled={loginLoading}
               />
             </div>
             
@@ -199,20 +288,38 @@ const HRAdmin = () => {
                 value={loginData.password}
                 onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                 className={styles.input}
+                required
+                disabled={loginLoading}
               />
             </div>
 
             {loginError && <p className={styles.error}>{loginError}</p>}
             
-            <button onClick={handleLogin} className={styles.loginButton}>
-              تسجيل الدخول
+            <button 
+              type="submit" 
+              className={styles.loginButton}
+              disabled={loginLoading}
+            >
+              {loginLoading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
             </button>
-          </div>
+          </form>
         </div>
       </div>
     );
   }
 
+  // ==================== LOADING STATE ====================
+  if (loading) {
+    return (
+      <div className={styles.adminContainer}>
+        <div className={styles.loadingContainer}>
+          <p>جاري التحميل...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ==================== RENDER ADMIN PANEL ====================
   return (
     <div className={styles.adminContainer}>
       {/* Header */}
@@ -246,7 +353,7 @@ const HRAdmin = () => {
         <div className={styles.content}>
           <div className={styles.section}>
             <h2 className={styles.sectionTitle}>إنشاء وظيفة جديدة</h2>
-            <div className={styles.form}>
+            <form onSubmit={createJob} className={styles.form}>
               <input
                 type="text"
                 name="title"
@@ -254,6 +361,7 @@ const HRAdmin = () => {
                 value={jobForm.title}
                 onChange={handleJobFormChange}
                 className={styles.input}
+                required
               />
               <input
                 type="text"
@@ -262,6 +370,7 @@ const HRAdmin = () => {
                 value={jobForm.jobType}
                 onChange={handleJobFormChange}
                 className={styles.input}
+                required
               />
               <input
                 type="text"
@@ -278,42 +387,47 @@ const HRAdmin = () => {
                 onChange={handleJobFormChange}
                 rows="4"
                 className={styles.textarea}
+                required
               />
-              <button onClick={createJob} className={styles.createButton}>
+              <button type="submit" className={styles.createButton}>
                 إنشاء وظيفة
               </button>
-            </div>
+            </form>
           </div>
 
           <div className={styles.section}>
-            <h2 className={styles.sectionTitle}>الوظائف الحالية</h2>
+            <h2 className={styles.sectionTitle}>الوظائف الحالية ({jobs.length})</h2>
             <div className={styles.jobsList}>
-              {jobs.map((job) => (
-                <div key={job.id} className={styles.jobItem}>
-                  <div className={styles.jobInfo}>
-                    <h3>{job.title}</h3>
-                    <p className={styles.jobType}>{job.job_type || job.jobType}</p>
-                    <span className={job.is_active || job.isActive ? styles.activeStatus : styles.inactiveStatus}>
-                      {job.is_active || job.isActive ? "نشطة" : "غير نشطة"}
-                    </span>
+              {jobs.length === 0 ? (
+                <p className={styles.noData}>لا توجد وظائف حالياً</p>
+              ) : (
+                jobs.map((job) => (
+                  <div key={job.id} className={styles.jobItem}>
+                    <div className={styles.jobInfo}>
+                      <h3>{job.title}</h3>
+                      <p className={styles.jobType}>{job.job_type || job.jobType}</p>
+                      <span className={job.is_active || job.isActive ? styles.activeStatus : styles.inactiveStatus}>
+                        {job.is_active || job.isActive ? "نشطة" : "غير نشطة"}
+                      </span>
+                    </div>
+                    <div className={styles.jobActions}>
+                      <button
+                        onClick={() => deactivateJob(job.id)}
+                        className={styles.deactivateButton}
+                        disabled={!(job.is_active || job.isActive)}
+                      >
+                        إيقاف
+                      </button>
+                      <button
+                        onClick={() => deleteJob(job.id)}
+                        className={styles.deleteButton}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
-                  <div className={styles.jobActions}>
-                    <button
-                      onClick={() => deactivateJob(job.id)}
-                      className={styles.deactivateButton}
-                      disabled={!(job.is_active || job.isActive)}
-                    >
-                      إيقاف
-                    </button>
-                    <button
-                      onClick={() => deleteJob(job.id)}
-                      className={styles.deleteButton}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -323,7 +437,7 @@ const HRAdmin = () => {
       {activeTab === "applications" && (
         <div className={styles.content}>
           <div className={styles.section}>
-            <h2 className={styles.sectionTitle}>طلبات التوظيف</h2>
+            <h2 className={styles.sectionTitle}>طلبات التوظيف ({applications.length})</h2>
             <div className={styles.applicationsList}>
               {applications.length === 0 ? (
                 <p className={styles.noData}>لا توجد طلبات حالياً</p>
@@ -340,29 +454,32 @@ const HRAdmin = () => {
                       </span>
                     </div>
                     <p className={styles.appEmail}>{app.email}</p>
-                    <p className={styles.appJob}>الوظيفة: {app.job_title}</p>
+                    <p className={styles.appJob}>الوظيفة: {app.jobTitle || app.job_title}</p>
                     {app.message && (
                       <p className={styles.appMessage}>{app.message}</p>
                     )}
                     <p className={styles.appDate}>
-                      {new Date(app.created_at).toLocaleDateString("ar-EG")}
+                      {new Date(app.createdAt || app.created_at).toLocaleDateString("ar-EG")}
                     </p>
                     <div className={styles.appActions}>
                       <button
                         onClick={() => updateApplicationStatus(app.id, "reviewed")}
                         className={styles.reviewButton}
+                        disabled={app.status === "reviewed"}
                       >
                         مراجعة
                       </button>
                       <button
                         onClick={() => updateApplicationStatus(app.id, "accepted")}
                         className={styles.acceptButton}
+                        disabled={app.status === "accepted"}
                       >
                         قبول
                       </button>
                       <button
                         onClick={() => updateApplicationStatus(app.id, "rejected")}
                         className={styles.rejectButton}
+                        disabled={app.status === "rejected"}
                       >
                         رفض
                       </button>

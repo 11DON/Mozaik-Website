@@ -34,7 +34,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Mount API routes
 app.use("/api/jobs", jobRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/apply", applyRoutes);
+app.use("/api", applyRoutes);
 
 const transporter = nodemailer.createTransport({
     service: "gmail",
