@@ -1,15 +1,17 @@
 import styles from "/src/styles/aboutUs.module.css";
 import assets from "/src/assets/homeAsset1.png";
-import {motion} from "framer-motion";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+
 export default function AboutUsSections() {
   return (
     <section className={styles.aboutWrap}>
       <div className={styles.inner}>
         <motion.div
-        viewport={{once:true}}
-        initial={{opacity:0, x:-100}}
-        whileInView={{opacity:1, x:0}}
-        transition={{duration:1, ease:"easeOut"}}
+          viewport={{ once: true }}
+          initial={{ opacity: 0, x: -100 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
         >
           <div className={styles.left}>
             <div className={styles.card}>
@@ -23,25 +25,25 @@ export default function AboutUsSections() {
                 الهـــدف وهو التخصص في تصميم وبناء الوحـدات السكنية والتجاريــة
                 والأبراج بمختلف أنواعه .
               </p>
-              <button className={styles.moreBtn}>اعرف المزيد</button>
+              <Link to="/WhoWeArePage"> <button className={styles.moreBtn}>اعرف المزيد</button></Link>
             </div>
           </div>
         </motion.div>
         <motion.div
-         className={styles.right}
-        viewport={{once:true}}
-        initial={{opacity:0, x:100}}
-        whileInView={{opacity:1, x:0}}
-        transition={{duration:1.2, ease:"easeOut"}}
+          className={styles.right}
+          viewport={{ once: true }}
+          initial={{ opacity: 0, x: 100 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
 
         >
-        
-        <div>
-          <div className={styles.bar} />
-          <div className={styles.imageCard}>
-            <img src={assets} alt="about" className={styles.aboutImage} />
+
+          <div>
+            <div className={styles.bar} />
+            <div className={styles.imageCard}>
+              <img src={assets} alt="about" className={styles.aboutImage} />
+            </div>
           </div>
-        </div>
         </motion.div>
       </div>
     </section>

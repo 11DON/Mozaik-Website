@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import ScrollToTop from "./components/ScrollToTop";
 
 import Navbar from "./components/navbar";
 import HomePage from "./pages/homePage.jsx";
@@ -15,6 +16,7 @@ function App() {
   return (
     <>
       <Navbar />
+      <ScrollToTop /> 
       <Routes>
         <Route path="/carrers/:id" element={<JobApplication />} />
         <Route path="/HR-Admin" element={<HRAdmin/>}/>
@@ -26,6 +28,7 @@ function App() {
         <Route path="/ourWork" element={<OurWork />} />
         <Route path="/carrers" element={<Carrers />} />
         ,<Route path="/contact" element={<Contact />} />
+
       </Routes>
       <Footer />
     </>

@@ -43,7 +43,9 @@ export default function Navbar() {
 
                        
                     </ul>
-                <a className="navbar-brand" href="#"><img src={blackLogo} alt="" className={styles.logo}/></a>
+                                                <Link className="nav-link active" to="/"> <a className="navbar-brand" href="#"><img src={blackLogo} alt="" className={styles.logo}/></a></Link>
+
+               
                 </div>
             </div>
         </nav>

@@ -1,5 +1,7 @@
 import styles from "/src/styles/callToAction.module.css";
 import {motion} from "framer-motion"
+import { Link } from "react-router-dom";
+
 export default function CTA (){
     return (
         <motion.div
@@ -12,9 +14,12 @@ export default function CTA (){
           <p className={styles.ctaDescription}>
             دعنا نحول أفكارك إلى واقع مميز
           </p>
-          <button className={styles.ctaBtn}>
+          <Link to="/contact">
+                    <button className={styles.ctaBtn}>
             تواصل معنا الآن
           </button>
+          </Link>
+
         </motion.div>
     )
 }
