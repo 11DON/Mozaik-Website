@@ -258,6 +258,29 @@ const HRAdmin = () => {
     }
   };
 
+    const deleteJobApplication = async (id) => {
+    if (!window.confirm("هل أنت متأكد من حذف هذا الطلب؟ سيتم حذف جميع الطلبات المرتبطة بها.")) return;
+
+    try {
+      const response = await authenticatedFetch(`${API_URL}/applications/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response) return;
+
+      if (response.ok) {
+        alert("تم حذف الوظيفة بنجاح");
+        loadJobs();
+      } else {
+        alert("فشل في حذف الوظيفة");
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      alert("خطأ في الخادم");
+    }
+  };
+
+
   // ==================== RENDER LOGIN ====================
   if (!isLoggedIn) {
     return (
@@ -469,6 +492,12 @@ const HRAdmin = () => {
                       >
                         مراجعة
                       </button>
+                       <button
+                        onClick={() => deleteJobApplication(app.id)}
+                        className={styles.reviewButton}
+                        disabled={app.status === "reviewed"}
+                      >
+Delet                      </button>
                       <button
                         onClick={() => updateApplicationStatus(app.id, "accepted")}
                         className={styles.acceptButton}

@@ -127,7 +127,23 @@ export const getAllApplications = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch applications", error: err.message });
   }
 };
+// ==================== DELETE APPLICATION (HR ONLY) ====================
+export const deleteApplication = async (req, res) => {
+  const { id } = req.params;
 
+  try {
+    const [result] = await db.query("DELETE FROM applications WHERE id = ?", [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    res.json({ message: "Application deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting application:", err);
+    res.status(500).json({ message: "Failed to delete application", error: err.message });
+  }
+};
 // ==================== UPDATE APPLICATION STATUS (HR ONLY) ====================
 export const updateApplicationStatus = async (req, res) => {
   const { id } = req.params;

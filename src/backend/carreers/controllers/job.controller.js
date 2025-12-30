@@ -4,13 +4,22 @@ import { db } from "../config/db.js";
 // ==================== GET ALL JOBS ====================
 export const getJobs = async (req, res) => {
   try {
-    const [rows] = await db.query("SELECT * FROM jobs ORDER BY created_at DESC");
+    const [rows] = await db.query(
+      "SELECT * FROM jobs ORDER BY created_at DESC"
+    );
 
     // Parse qualifications safely
     const jobs = rows.map((job) => {
-      try {
-        job.qualifications = JSON.parse(job.qualifications);
-      } catch {
+      if (typeof job.qualifications === "string") {
+        try {
+          job.qualifications = JSON.parse(job.qualifications);
+        } catch (error) {
+          console.error("Parse error: ", job.qualifications);
+          job.qualifications = [];
+        }
+      }
+
+      if (!Array.isArray(job.qualifications)) {
         job.qualifications = [];
       }
       return job;
@@ -19,7 +28,9 @@ export const getJobs = async (req, res) => {
     res.json(jobs);
   } catch (error) {
     console.error("Database error:", error);
-    res.status(500).json({ message: "فشل في جلب الوظائف", error: error.message });
+    res
+      .status(500)
+      .json({ message: "فشل في جلب الوظائف", error: error.message });
   }
 };
 
@@ -43,10 +54,19 @@ export const createJob = async (req, res) => {
     const [result] = await db.query(
       `INSERT INTO jobs (title, job_type, qualifications, description, is_active, created_at)
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [title, jobType, JSON.stringify(qualifications), description, true, new Date()]
+      [
+        title,
+        jobType,
+        JSON.stringify(qualifications),
+        description,
+        true,
+        new Date(),
+      ]
     );
 
-    const [rows] = await db.query("SELECT * FROM jobs WHERE id = ?", [result.insertId]);
+    const [rows] = await db.query("SELECT * FROM jobs WHERE id = ?", [
+      result.insertId,
+    ]);
     const job = rows[0];
 
     try {
@@ -58,7 +78,9 @@ export const createJob = async (req, res) => {
     res.status(201).json(job);
   } catch (error) {
     console.error("Database error:", error);
-    res.status(500).json({ message: "فشل في إنشاء الوظيفة", error: error.message });
+    res
+      .status(500)
+      .json({ message: "فشل في إنشاء الوظيفة", error: error.message });
   }
 };
 
@@ -70,7 +92,9 @@ export const deactivateJob = async (req, res) => {
     res.json({ message: "تم إيقاف الوظيفة بنجاح" });
   } catch (error) {
     console.error("Database error:", error);
-    res.status(500).json({ message: "فشل في إيقاف الوظيفة", error: error.message });
+    res
+      .status(500)
+      .json({ message: "فشل في إيقاف الوظيفة", error: error.message });
   }
 };
 
@@ -82,6 +106,8 @@ export const deleteJob = async (req, res) => {
     res.json({ message: "تم حذف الوظيفة بنجاح" });
   } catch (error) {
     console.error("Database error:", error);
-    res.status(500).json({ message: "فشل في حذف الوظيفة", error: error.message });
+    res
+      .status(500)
+      .json({ message: "فشل في حذف الوظيفة", error: error.message });
   }
 };

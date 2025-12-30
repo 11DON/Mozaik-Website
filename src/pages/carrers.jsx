@@ -84,7 +84,7 @@ const Careers = () => {
 
                   <div className={styles.jobMeta}>
                     <div className={styles.metaItem}>
-                      <span className={styles.metaText}>{job.jobType}</span>
+                      <span className={styles.metaText}>{job.job_type}</span>
                       <Briefcase className={styles.metaIcon} />
                     </div>
                     <div className={styles.metaItem}>
@@ -95,14 +95,13 @@ const Careers = () => {
 
                   <div className={styles.qualifications}>
                     {job.qualifications &&
-                      job.qualifications.map((qual, index) => (
+                      job.qualifications.slice(0,4).map((qual, index) => (
                         <span key={index} className={styles.qualificationBadge}>
                           {qual}
                         </span>
                       ))}
                   </div>
 
-                  <p className={styles.jobDescription}>{job.description}</p>
 
                   <button
                     onClick={() => navigate(`/careers/${job.id}`)}

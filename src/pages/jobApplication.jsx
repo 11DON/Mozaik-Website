@@ -1,6 +1,13 @@
 // JobApplication.jsx
 import React, { useState, useEffect } from "react";
-import { Briefcase, Upload, X, CheckCircle, AlertCircle, ArrowLeft } from "lucide-react";
+import {
+  Briefcase,
+  Upload,
+  X,
+  CheckCircle,
+  AlertCircle,
+  ArrowLeft,
+} from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import styles from "../styles/jobDetails.module.css";
 import { useParams } from "react-router-dom";
@@ -11,8 +18,7 @@ const JobApplication = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const jobIdFromUrl =  id;
-
+  const jobIdFromUrl = id;
 
   const [selectedJob, setSelectedJob] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -34,7 +40,7 @@ const JobApplication = () => {
   useEffect(() => {
     if (!jobIdFromUrl) {
       // If no job ID in URL, redirect to careers page
-      navigate('/careers');
+      navigate("/careers");
       return;
     }
 
@@ -43,17 +49,25 @@ const JobApplication = () => {
         const response = await fetch(`${API_URL}/jobs`);
         if (response.ok) {
           const data = await response.json();
-          const job = data.find(j => j.id === parseInt(jobIdFromUrl));
-          
+          const job = data.find((j) => j.id === parseInt(jobIdFromUrl));
+          console.log("JOB FROM API:", job);
+console.log("QUALIFICATIONS TYPE:", typeof job?.qualifications);
+console.log("QUALIFICATIONS VALUE:", job?.qualifications);
+          job.qualifications = Array.isArray(job.qualifications)
+            ? job.qualifications
+            : typeof job.qualifications == "string"
+            ? job.qualifications.split(",").map((q) => q.trim())
+            : [];
+
           if (!job) {
             setError("الوظيفة غير موجودة");
-            setTimeout(() => navigate('/careers'), 2000);
+            setTimeout(() => navigate("/careers"), 2000);
             return;
           }
 
           if (!job.is_active && !job.isActive) {
             setError("هذه الوظيفة غير نشطة حالياً");
-            setTimeout(() => navigate('/careers'), 2000);
+            setTimeout(() => navigate("/careers"), 2000);
             return;
           }
 
@@ -163,7 +177,7 @@ const JobApplication = () => {
 
         // Redirect to careers after 5 seconds
         setTimeout(() => {
-          navigate('/careers');
+          navigate("/careers");
         }, 5000);
       } else {
         const errorData = await response.json();
@@ -206,8 +220,8 @@ const JobApplication = () => {
   return (
     <div className={styles.container}>
       {/* Back Button */}
-      <button 
-        onClick={() => navigate('/careers')} 
+      <button
+        onClick={() => navigate("/careers")}
         className={styles.backButton}
       >
         <ArrowLeft size={20} />
@@ -225,7 +239,10 @@ const JobApplication = () => {
           <CheckCircle size={24} />
           <div>
             <h3>تم إرسال طلبك بنجاح!</h3>
-            <p>سنقوم بمراجعة طلبك والتواصل معك قريباً. سيتم تحويلك إلى صفحة الوظائف خلال 5 ثوانٍ...</p>
+            <p>
+              سنقوم بمراجعة طلبك والتواصل معك قريباً. سيتم تحويلك إلى صفحة
+              الوظائف خلال 5 ثوانٍ...
+            </p>
           </div>
         </div>
       )}
@@ -245,7 +262,7 @@ const JobApplication = () => {
         {/* Job Details Section - Shows Selected Job Only */}
         <div className={styles.jobDetailsSection}>
           <h2>تفاصيل الوظيفة</h2>
-          
+
           <div className={styles.jobDetailsCard}>
             <div className={styles.jobDetailsHeader}>
               <h3>{selectedJob.title}</h3>
@@ -260,28 +277,32 @@ const JobApplication = () => {
                 <p className={styles.description}>{selectedJob.description}</p>
               </div>
 
-              {selectedJob.qualifications && selectedJob.qualifications.length > 0 && (
-                <div className={styles.detailSection}>
-                  <h4>✅ المؤهلات المطلوبة</h4>
-                  <ul className={styles.qualificationsList}>
-                    {selectedJob.qualifications.map((qual, index) => (
-                      <li key={index}>
-                        <CheckCircle size={16} />
-                        <span>{qual}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {selectedJob.qualifications &&
+                selectedJob.qualifications.length > 0 && (
+                  <div className={styles.detailSection}>
+                    <h4>✅ المؤهلات المطلوبة</h4>
+                    <ul className={styles.qualificationsList}>
+                      {selectedJob.qualifications.map((qual, index) => (
+                        <li key={index}>
+                          <CheckCircle size={16} />
+                          <span>{qual}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
               <div className={styles.detailSection}>
                 <h4>📅 تاريخ النشر</h4>
                 <p className={styles.date}>
-                  {new Date(selectedJob.created_at).toLocaleDateString('ar-EG', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
+                  {new Date(selectedJob.created_at).toLocaleDateString(
+                    "ar-EG",
+                    {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }
+                  )}
                 </p>
               </div>
             </div>
@@ -291,10 +312,12 @@ const JobApplication = () => {
         {/* Application Form */}
         <div className={styles.formSection} id="application-form">
           <h2>نموذج التقديم</h2>
-          
+
           <div className={styles.applyingFor}>
             <Briefcase size={18} />
-            <span>التقديم على: <strong>{selectedJob.title}</strong></span>
+            <span>
+              التقديم على: <strong>{selectedJob.title}</strong>
+            </span>
           </div>
 
           <form onSubmit={handleSubmit} className={styles.form}>
