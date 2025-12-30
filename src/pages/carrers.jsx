@@ -105,7 +105,7 @@ const Careers = () => {
                   <p className={styles.jobDescription}>{job.description}</p>
 
                   <button
-                    onClick={() => navigate(`/carrers/${job.id}`)}
+                    onClick={() => navigate(`/careers/${job.id}`)}
                     className={styles.applyButton}
                   >
                     عرض التفاصيل

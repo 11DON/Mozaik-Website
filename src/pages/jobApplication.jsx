@@ -3,13 +3,16 @@ import React, { useState, useEffect } from "react";
 import { Briefcase, Upload, X, CheckCircle, AlertCircle, ArrowLeft } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import styles from "../styles/jobDetails.module.css";
+import { useParams } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5137/api";
 
 const JobApplication = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const jobIdFromUrl = searchParams.get('jobId');
+  const { id } = useParams();
+
+  const jobIdFromUrl =  id;
+
 
   const [selectedJob, setSelectedJob] = useState(null);
   const [loading, setLoading] = useState(true);

@@ -18,7 +18,7 @@ function App() {
       <Navbar />
       <ScrollToTop /> 
       <Routes>
-        <Route path="/carrers/:id" element={<JobApplication />} />
+        <Route path="/careers/:id" element={<JobApplication />} />
         <Route path="/HR-Admin" element={<HRAdmin/>}/>
         <Route path="/" element={<HomePage />} />
         <Route path="/portfolio" element={<Portfolio />} />
@@ -26,7 +26,7 @@ function App() {
         <Route path="/WhoWeArePage" element={<WhoWeArePage />} />
         <Route path="/services" element={<Services />} />
         <Route path="/ourWork" element={<OurWork />} />
-        <Route path="/carrers" element={<Carrers />} />
+        <Route path="/careers" element={<Carrers />} />
         ,<Route path="/contact" element={<Contact />} />
 
       </Routes>
