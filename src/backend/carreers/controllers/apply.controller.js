@@ -9,21 +9,26 @@ export const applyJob = async (req, res) => {
   console.log("=== Application Request Started ===");
   console.log("Req body:", req.body);
   console.log("Req file:", req.file);
-  
+
   const { name, email, message, jobId } = req.body;
   const cvFile = req.file;
 
   // Validation
   if (!name || !email || !jobId || !cvFile) {
-    console.error("Validation failed:", { name, email, jobId, hasFile: !!cvFile });
-    return res.status(400).json({ 
+    console.error("Validation failed:", {
+      name,
+      email,
+      jobId,
+      hasFile: !!cvFile,
+    });
+    return res.status(400).json({
       message: "Name, email, jobId, and CV file are required",
       missing: {
         name: !name,
         email: !email,
         jobId: !jobId,
-        cvFile: !cvFile
-      }
+        cvFile: !cvFile,
+      },
     });
   }
 
@@ -51,10 +56,14 @@ export const applyJob = async (req, res) => {
     }
 
     // Save CV file
-    const cvFilename = `${uuidv4()}-${cvFile.originalname}`;
+    const safeOriginalName = cvFile.originalname
+      .replace(/\s+/g, "_") // spaces → _
+      .replace(/[^a-zA-Z0-9._-]/g, ""); // remove ', ", etc
+
+    const cvFilename = `${uuidv4()}-${safeOriginalName}`;
     const cvPath = path.join(uploadsDir, cvFilename);
     console.log("Saving CV to:", cvPath);
-    
+
     fs.writeFileSync(cvPath, cvFile.buffer);
     console.log("CV saved successfully");
 
@@ -66,7 +75,7 @@ export const applyJob = async (req, res) => {
     console.log("Saving application to database...");
     await db.query(
       "INSERT INTO applications (id, job_id, name, email, message, cv_path, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)",
-      [applicationId, jobId, name, email, message || "", cvPath, new Date()]
+      [applicationId, jobId, name, email, message || "", cvFilename, new Date()]
     );
     console.log("Application saved to database");
 
@@ -84,7 +93,9 @@ export const applyJob = async (req, res) => {
         <p><strong>الرسالة:</strong> ${message || "لا توجد رسالة"}</p>
         <p><strong>السيرة الذاتية:</strong> ${cvFile.originalname}</p>
         <hr>
-        <p><small>تم الإرسال في: ${new Date().toLocaleString('ar-EG')}</small></p>
+        <p><small>تم الإرسال في: ${new Date().toLocaleString(
+          "ar-EG"
+        )}</small></p>
       `,
     };
 
@@ -93,19 +104,18 @@ export const applyJob = async (req, res) => {
 
     console.log("=== Application Request Completed Successfully ===");
     res.json({ message: "Application sent successfully" });
-    
   } catch (err) {
     console.error("=== ERROR in applyJob ===");
     console.error("Error name:", err.name);
     console.error("Error message:", err.message);
     console.error("Error stack:", err.stack);
     console.error("=========================");
-    
-    res.status(500).json({ 
-      message: "Failed to process application", 
+
+    res.status(500).json({
+      message: "Failed to process application",
       error: err.message,
       // Remove the error details in production
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+      ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
     });
   }
 };
@@ -115,16 +125,27 @@ export const getAllApplications = async (req, res) => {
   try {
     console.log("Fetching all applications...");
     const [rows] = await db.query(`
-      SELECT a.*, j.title as job_title 
-      FROM applications a 
-      LEFT JOIN jobs j ON a.job_id = j.id 
-      ORDER BY a.created_at DESC
-    `);
+  SELECT 
+    a.id,
+    a.job_id,
+    a.name,
+    a.email,
+    a.message,
+    a.cv_path,
+    a.status,
+    a.created_at,
+    j.title as job_title 
+  FROM applications a 
+  LEFT JOIN jobs j ON a.job_id = j.id 
+  ORDER BY a.created_at DESC
+`);
     console.log(`Found ${rows.length} applications`);
     res.json(rows);
   } catch (err) {
     console.error("Error fetching applications:", err);
-    res.status(500).json({ message: "Failed to fetch applications", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch applications", error: err.message });
   }
 };
 // ==================== DELETE APPLICATION (HR ONLY) ====================
@@ -132,7 +153,9 @@ export const deleteApplication = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [result] = await db.query("DELETE FROM applications WHERE id = ?", [id]);
+    const [result] = await db.query("DELETE FROM applications WHERE id = ?", [
+      id,
+    ]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Application not found" });
@@ -141,37 +164,41 @@ export const deleteApplication = async (req, res) => {
     res.json({ message: "Application deleted successfully" });
   } catch (err) {
     console.error("Error deleting application:", err);
-    res.status(500).json({ message: "Failed to delete application", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to delete application", error: err.message });
   }
 };
 // ==================== UPDATE APPLICATION STATUS (HR ONLY) ====================
 export const updateApplicationStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  
-  const validStatuses = ['pending', 'reviewed', 'accepted', 'rejected'];
+
+  const validStatuses = ["pending", "reviewed", "accepted", "rejected"];
   if (!validStatuses.includes(status)) {
-    return res.status(400).json({ 
-      message: "Invalid status", 
-      validStatuses 
+    return res.status(400).json({
+      message: "Invalid status",
+      validStatuses,
     });
   }
-  
+
   try {
     console.log(`Updating application ${id} status to ${status}`);
     const [result] = await db.query(
-      "UPDATE applications SET status = ? WHERE id = ?", 
+      "UPDATE applications SET status = ? WHERE id = ?",
       [status, id]
     );
-    
+
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Application not found" });
     }
-    
+
     console.log("Status updated successfully");
     res.json({ message: "Status updated successfully" });
   } catch (err) {
     console.error("Error updating status:", err);
-    res.status(500).json({ message: "Failed to update status", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to update status", error: err.message });
   }
 };

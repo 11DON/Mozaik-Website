@@ -3,9 +3,9 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
-import path from "path";
-import { fileURLToPath } from "url";
 
+import path from 'path';
+import { fileURLToPath } from 'url';
 // Get __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +27,7 @@ const allowedOrigins = [
 app.use(cors());
 
 app.use(bodyParser.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Serve HR admin page - MUST come before API routes
 app.use(express.static(path.join(__dirname, "public")));

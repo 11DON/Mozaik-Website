@@ -4,18 +4,19 @@ import { Briefcase, Trash2, Users } from "lucide-react";
 import styles from "../styles/hr.module.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5137/api";
+ 
 
+ 
 const HRAdmin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
-  
-  const [jobs, setJobs] = useState([]);
+ const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
   const [activeTab, setActiveTab] = useState("jobs");
   const [loading, setLoading] = useState(true);
-  
+
   const [jobForm, setJobForm] = useState({
     title: "",
     jobType: "",
@@ -23,10 +24,21 @@ const HRAdmin = () => {
     description: "",
   });
 
+
+  const downloadCV = (cvPath) => {
+    if(!cvPath){
+      alert("لا يوجد سيرة ذاتية لهذا الطلب");
+      return;
+    }
+     // open cv in new Tab
+  const cvUrl = `${API_URL.replace('/api','')}/uploads/${cvPath.split('/').pop()}`;
+  window.open(cvUrl,'_blank');
+  };
+
   // ==================== AUTH HELPER ====================
   const authenticatedFetch = async (url, options = {}) => {
     const token = localStorage.getItem("authToken");
-    
+
     if (!token) {
       console.error("No authentication token found");
       handleLogout();
@@ -38,9 +50,9 @@ const HRAdmin = () => {
         ...options,
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           ...options.headers,
-        }
+        },
       });
 
       // Handle unauthorized - token expired or invalid
@@ -88,11 +100,11 @@ const HRAdmin = () => {
       const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginData)
+        body: JSON.stringify(loginData),
       });
-      
+
       const data = await response.json();
-      
+
       if (response.ok) {
         localStorage.setItem("authToken", data.token);
         setIsLoggedIn(true);
@@ -121,7 +133,7 @@ const HRAdmin = () => {
     try {
       // Jobs endpoint is public, no auth needed
       const response = await fetch(`${API_URL}/jobs`);
-      
+
       if (response.ok) {
         const data = await response.json();
         setJobs(data);
@@ -139,7 +151,7 @@ const HRAdmin = () => {
 
   const createJob = async (e) => {
     e.preventDefault();
-    
+
     if (!jobForm.title || !jobForm.jobType || !jobForm.description) {
       alert("يرجى ملء جميع الحقول المطلوبة");
       return;
@@ -163,7 +175,12 @@ const HRAdmin = () => {
 
       if (response.ok) {
         alert("تم إنشاء الوظيفة بنجاح!");
-        setJobForm({ title: "", jobType: "", qualifications: "", description: "" });
+        setJobForm({
+          title: "",
+          jobType: "",
+          qualifications: "",
+          description: "",
+        });
         loadJobs();
       } else {
         const error = await response.json();
@@ -179,9 +196,12 @@ const HRAdmin = () => {
     if (!window.confirm("هل أنت متأكد من إيقاف هذه الوظيفة؟")) return;
 
     try {
-      const response = await authenticatedFetch(`${API_URL}/jobs/${id}/deactivate`, {
-        method: "PATCH",
-      });
+      const response = await authenticatedFetch(
+        `${API_URL}/jobs/${id}/deactivate`,
+        {
+          method: "PATCH",
+        }
+      );
 
       if (!response) return;
 
@@ -198,7 +218,12 @@ const HRAdmin = () => {
   };
 
   const deleteJob = async (id) => {
-    if (!window.confirm("هل أنت متأكد من حذف هذه الوظيفة؟ سيتم حذف جميع الطلبات المرتبطة بها.")) return;
+    if (
+      !window.confirm(
+        "هل أنت متأكد من حذف هذه الوظيفة؟ سيتم حذف جميع الطلبات المرتبطة بها."
+      )
+    )
+      return;
 
     try {
       const response = await authenticatedFetch(`${API_URL}/jobs/${id}`, {
@@ -223,9 +248,9 @@ const HRAdmin = () => {
   const loadApplications = async () => {
     try {
       const response = await authenticatedFetch(`${API_URL}/applications`);
-      
+
       if (!response) return;
-      
+
       if (response.ok) {
         const data = await response.json();
         setApplications(data);
@@ -239,10 +264,13 @@ const HRAdmin = () => {
 
   const updateApplicationStatus = async (id, status) => {
     try {
-      const response = await authenticatedFetch(`${API_URL}/applications/${id}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status }),
-      });
+      const response = await authenticatedFetch(
+        `${API_URL}/applications/${id}/status`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ status }),
+        }
+      );
 
       if (!response) return;
 
@@ -258,19 +286,27 @@ const HRAdmin = () => {
     }
   };
 
-    const deleteJobApplication = async (id) => {
-    if (!window.confirm("هل أنت متأكد من حذف هذا الطلب؟ سيتم حذف جميع الطلبات المرتبطة بها.")) return;
+  const deleteJobApplication = async (id) => {
+    if (
+      !window.confirm(
+        "هل أنت متأكد من حذف هذا الطلب؟ سيتم حذف جميع الطلبات المرتبطة بها."
+      )
+    )
+      return;
 
     try {
-      const response = await authenticatedFetch(`${API_URL}/applications/${id}`, {
-        method: "DELETE",
-      });
+      const response = await authenticatedFetch(
+        `${API_URL}/applications/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response) return;
 
       if (response.ok) {
         alert("تم حذف الوظيفة بنجاح");
-        loadJobs();
+        loadApplications();
       } else {
         alert("فشل في حذف الوظيفة");
       }
@@ -280,15 +316,14 @@ const HRAdmin = () => {
     }
   };
 
-
   // ==================== RENDER LOGIN ====================
   if (!isLoggedIn) {
     return (
       <div className={styles.loginContainer}>
         <div className={styles.loginCard}>
-          <h1 className={styles.loginTitle}>لوحة تحكم الموارد البشرية</h1>
-          <p className={styles.loginSubtitle}>تسجيل الدخول</p>
-          
+          <h1 className={styles.loginTitle}> HR </h1>
+          <p className={styles.loginSubtitle}>Login</p>
+
           <form onSubmit={handleLogin} className={styles.loginForm}>
             <div className={styles.formGroup}>
               <label>البريد الإلكتروني</label>
@@ -296,20 +331,24 @@ const HRAdmin = () => {
                 type="email"
                 placeholder="admin@example.com"
                 value={loginData.email}
-                onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                onChange={(e) =>
+                  setLoginData({ ...loginData, email: e.target.value })
+                }
                 className={styles.input}
                 required
                 disabled={loginLoading}
               />
             </div>
-            
+
             <div className={styles.formGroup}>
               <label>كلمة المرور</label>
               <input
                 type="password"
                 placeholder="••••••••"
                 value={loginData.password}
-                onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                onChange={(e) =>
+                  setLoginData({ ...loginData, password: e.target.value })
+                }
                 className={styles.input}
                 required
                 disabled={loginLoading}
@@ -317,9 +356,9 @@ const HRAdmin = () => {
             </div>
 
             {loginError && <p className={styles.error}>{loginError}</p>}
-            
-            <button 
-              type="submit" 
+
+            <button
+              type="submit"
               className={styles.loginButton}
               disabled={loginLoading}
             >
@@ -347,7 +386,7 @@ const HRAdmin = () => {
     <div className={styles.adminContainer}>
       {/* Header */}
       <div className={styles.header}>
-        <h1>لوحة تحكم الموارد البشرية</h1>
+        <h1>HR</h1>
         <button onClick={handleLogout} className={styles.logoutButton}>
           تسجيل الخروج
         </button>
@@ -356,14 +395,18 @@ const HRAdmin = () => {
       {/* Tabs */}
       <div className={styles.tabs}>
         <button
-          className={`${styles.tab} ${activeTab === "jobs" ? styles.activeTab : ""}`}
+          className={`${styles.tab} ${
+            activeTab === "jobs" ? styles.activeTab : ""
+          }`}
           onClick={() => setActiveTab("jobs")}
         >
           <Briefcase className={styles.tabIcon} />
           إدارة الوظائف
         </button>
         <button
-          className={`${styles.tab} ${activeTab === "applications" ? styles.activeTab : ""}`}
+          className={`${styles.tab} ${
+            activeTab === "applications" ? styles.activeTab : ""
+          }`}
           onClick={() => setActiveTab("applications")}
         >
           <Users className={styles.tabIcon} />
@@ -419,7 +462,9 @@ const HRAdmin = () => {
           </div>
 
           <div className={styles.section}>
-            <h2 className={styles.sectionTitle}>الوظائف الحالية ({jobs.length})</h2>
+            <h2 className={styles.sectionTitle}>
+              الوظائف الحالية ({jobs.length})
+            </h2>
             <div className={styles.jobsList}>
               {jobs.length === 0 ? (
                 <p className={styles.noData}>لا توجد وظائف حالياً</p>
@@ -428,8 +473,16 @@ const HRAdmin = () => {
                   <div key={job.id} className={styles.jobItem}>
                     <div className={styles.jobInfo}>
                       <h3>{job.title}</h3>
-                      <p className={styles.jobType}>{job.job_type || job.jobType}</p>
-                      <span className={job.is_active || job.isActive ? styles.activeStatus : styles.inactiveStatus}>
+                      <p className={styles.jobType}>
+                        {job.job_type || job.jobType}
+                      </p>
+                      <span
+                        className={
+                          job.is_active || job.isActive
+                            ? styles.activeStatus
+                            : styles.inactiveStatus
+                        }
+                      >
                         {job.is_active || job.isActive ? "نشطة" : "غير نشطة"}
                       </span>
                     </div>
@@ -460,7 +513,9 @@ const HRAdmin = () => {
       {activeTab === "applications" && (
         <div className={styles.content}>
           <div className={styles.section}>
-            <h2 className={styles.sectionTitle}>طلبات التوظيف ({applications.length})</h2>
+            <h2 className={styles.sectionTitle}>
+              طلبات التوظيف ({applications.length})
+            </h2>
             <div className={styles.applicationsList}>
               {applications.length === 0 ? (
                 <p className={styles.noData}>لا توجد طلبات حالياً</p>
@@ -477,36 +532,65 @@ const HRAdmin = () => {
                       </span>
                     </div>
                     <p className={styles.appEmail}>{app.email}</p>
-                    <p className={styles.appJob}>الوظيفة: {app.jobTitle || app.job_title}</p>
+                    <p className={styles.appJob}>
+                      الوظيفة: {app.jobTitle || app.job_title}
+                    </p>
                     {app.message && (
                       <p className={styles.appMessage}>{app.message}</p>
                     )}
                     <p className={styles.appDate}>
-                      {new Date(app.createdAt || app.created_at).toLocaleDateString("ar-EG")}
+                      {new Date(
+                        app.createdAt || app.created_at
+                      ).toLocaleDateString("ar-EG")}
                     </p>
+                     {app.cv_path && (
+                <button
+                  onClick={() => downloadCV(app.cv_path)}
+                  className={styles.downloadCvButton}
+                  style={{
+                    backgroundColor: '#4CAF50',
+                    color: 'white',
+                    padding: '8px 16px',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    marginBottom: '10px',
+                    fontSize: '14px'
+                  }}
+                >
+                  📄 تحميل السيرة الذاتية
+                </button>
+              )}
                     <div className={styles.appActions}>
                       <button
-                        onClick={() => updateApplicationStatus(app.id, "reviewed")}
+                        onClick={() =>
+                          updateApplicationStatus(app.id, "reviewed")
+                        }
                         className={styles.reviewButton}
                         disabled={app.status === "reviewed"}
                       >
                         مراجعة
                       </button>
-                       <button
+                      <button
                         onClick={() => deleteJobApplication(app.id)}
                         className={styles.reviewButton}
                         disabled={app.status === "reviewed"}
                       >
-Delet                      </button>
+                        Delete{" "}
+                      </button>
                       <button
-                        onClick={() => updateApplicationStatus(app.id, "accepted")}
+                        onClick={() =>
+                          updateApplicationStatus(app.id, "accepted")
+                        }
                         className={styles.acceptButton}
                         disabled={app.status === "accepted"}
                       >
                         قبول
                       </button>
                       <button
-                        onClick={() => updateApplicationStatus(app.id, "rejected")}
+                        onClick={() =>
+                          updateApplicationStatus(app.id, "rejected")
+                        }
                         className={styles.rejectButton}
                         disabled={app.status === "rejected"}
                       >
