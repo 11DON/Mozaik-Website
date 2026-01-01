@@ -1,4 +1,3 @@
-// src/backend/carreers/controllers/job.controller.js
 import { db } from "../config/db.js";
 
 // ==================== GET ALL JOBS ====================
@@ -8,19 +7,19 @@ export const getJobs = async (req, res) => {
       "SELECT * FROM jobs ORDER BY created_at DESC"
     );
 
-    // Parse qualifications safely
+    // Safely parse qualifications
     const jobs = rows.map((job) => {
-      if (typeof job.qualifications === "string") {
-        try {
-          job.qualifications = JSON.parse(job.qualifications);
-        } catch (error) {
-          console.error("Parse error: ", job.qualifications);
-          job.qualifications = [];
-        }
-      }
-
-      if (!Array.isArray(job.qualifications)) {
-        job.qualifications = [];
+      try {
+        // Try parsing as JSON
+        job.qualifications = JSON.parse(job.qualifications);
+        if (!Array.isArray(job.qualifications)) job.qualifications = [];
+      } catch (err) {
+        // If invalid JSON, fallback to splitting comma
+        console.warn("Invalid JSON in DB, converting to array:", job.qualifications);
+        job.qualifications = String(job.qualifications)
+          .split(",")
+          .map(q => q.trim())
+          .filter(Boolean);
       }
       return job;
     });
@@ -28,49 +27,58 @@ export const getJobs = async (req, res) => {
     res.json(jobs);
   } catch (error) {
     console.error("Database error:", error);
-    res
-      .status(500)
-      .json({ message: "فشل في جلب الوظائف", error: error.message });
+    res.status(500).json({ message: "فشل في جلب الوظائف", error: error.message });
   }
 };
 
 // ==================== CREATE JOB ====================
 export const createJob = async (req, res) => {
-  let { title, jobType, qualifications, description } = req.body;
+  let { title, job_type, job_type_category, qualifications, description } = req.body;
 
-  if (!title || !jobType || !qualifications || !description) {
+  if (!title || !job_type || !job_type_category || !description) {
     return res.status(400).json({ message: "جميع الحقول مطلوبة" });
   }
 
-  // Ensure qualifications is an array
+  const allowedCategories = ["join", "contractor", "supplier"];
+  if (!allowedCategories.includes(job_type_category)) {
+    return res.status(400).json({ message: "Invalid job category" });
+  }
+
+  // Ensure qualifications is always an array
   if (!Array.isArray(qualifications)) {
     qualifications = String(qualifications)
       .split(",")
-      .map((q) => q.trim())
-      .filter((q) => q);
+      .map(q => q.trim())
+      .filter(Boolean);
   }
 
   try {
     const [result] = await db.query(
-      `INSERT INTO jobs (title, job_type, qualifications, description, is_active, created_at)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO jobs (
+        title,
+        job_type,
+        job_type_category,
+        qualifications,
+        description,
+        is_active,
+        created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         title,
-        jobType,
-        JSON.stringify(qualifications),
+        job_type,
+        job_type_category,
+        JSON.stringify(qualifications), // ✅ always valid JSON
         description,
         true,
         new Date(),
       ]
     );
 
-    const [rows] = await db.query("SELECT * FROM jobs WHERE id = ?", [
-      result.insertId,
-    ]);
+    const [rows] = await db.query("SELECT * FROM jobs WHERE id = ?", [result.insertId]);
     const job = rows[0];
 
     try {
-      job.qualifications = JSON.parse(job.qualifications);
+      job.qualifications = JSON.parse(job.qualifications || "[]");
     } catch {
       job.qualifications = [];
     }
@@ -78,9 +86,7 @@ export const createJob = async (req, res) => {
     res.status(201).json(job);
   } catch (error) {
     console.error("Database error:", error);
-    res
-      .status(500)
-      .json({ message: "فشل في إنشاء الوظيفة", error: error.message });
+    res.status(500).json({ message: "فشل في إنشاء الوظيفة", error: error.message });
   }
 };
 
@@ -92,9 +98,7 @@ export const deactivateJob = async (req, res) => {
     res.json({ message: "تم إيقاف الوظيفة بنجاح" });
   } catch (error) {
     console.error("Database error:", error);
-    res
-      .status(500)
-      .json({ message: "فشل في إيقاف الوظيفة", error: error.message });
+    res.status(500).json({ message: "فشل في إيقاف الوظيفة", error: error.message });
   }
 };
 
@@ -106,8 +110,6 @@ export const deleteJob = async (req, res) => {
     res.json({ message: "تم حذف الوظيفة بنجاح" });
   } catch (error) {
     console.error("Database error:", error);
-    res
-      .status(500)
-      .json({ message: "فشل في حذف الوظيفة", error: error.message });
+    res.status(500).json({ message: "فشل في حذف الوظيفة", error: error.message });
   }
 };

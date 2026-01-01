@@ -12,14 +12,15 @@ import Carrers from "./pages/carrers.jsx";
 import Contact from "./pages/contactPage.jsx";
 import HRAdmin from "./pages/hr.jsx";
 import JobApplication from "./pages/jobApplication.jsx";
+import News from "./pages/news.jsx";
 function App() {
   return (
     <>
       <Navbar />
-      <ScrollToTop /> 
+      <ScrollToTop />
       <Routes>
         <Route path="/careers/:id" element={<JobApplication />} />
-        <Route path="/HR-Admin" element={<HRAdmin/>}/>
+        <Route path="/HR-Admin" element={<HRAdmin />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/portfolio/:id" element={<Portfolio />} />
@@ -27,8 +28,8 @@ function App() {
         <Route path="/services" element={<Services />} />
         <Route path="/ourWork" element={<OurWork />} />
         <Route path="/careers" element={<Carrers />} />
-        ,<Route path="/contact" element={<Contact />} />
-
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/news" element={<News />} />
       </Routes>
       <Footer />
     </>

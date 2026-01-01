@@ -1,4 +1,4 @@
-import blackLogo from "/src/assets/mLogoB.png";
+import blackLogo from "/src/assets/LogoB.png";
 import styles from "/src/styles/Navbar.module.css";
 import { Link } from "react-router-dom";
 export default function Navbar() {
@@ -42,9 +42,13 @@ export default function Navbar() {
                 من نحن
               </Link>
             </li>
-            {/* <li className="nav-item">
-                            <a className="nav-link" href="#">أخبار</a>
-                        </li> */}
+            <li className="nav-item">
+<Link
+className="nav-link active"
+to="/news"
+>
+اخبار
+</Link>                        </li>
             <li className="nav-item">
               <Link className="nav-link active" to="/ourWork">
                 اعمالنا

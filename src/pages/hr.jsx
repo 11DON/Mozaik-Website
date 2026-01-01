@@ -4,35 +4,35 @@ import { Briefcase, Trash2, Users } from "lucide-react";
 import styles from "../styles/hr.module.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5137/api";
- 
 
- 
 const HRAdmin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
- const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
   const [activeTab, setActiveTab] = useState("jobs");
   const [loading, setLoading] = useState(true);
 
-  const [jobForm, setJobForm] = useState({
-    title: "",
-    jobType: "",
-    qualifications: "",
-    description: "",
-  });
-
+ const [jobForm, setJobForm] = useState({
+  title: "",
+  jobType: "",
+  jobCategory: "",
+  qualifications: "",
+  description: "",
+});
 
   const downloadCV = (cvPath) => {
-    if(!cvPath){
+    if (!cvPath) {
       alert("لا يوجد سيرة ذاتية لهذا الطلب");
       return;
     }
-     // open cv in new Tab
-  const cvUrl = `${API_URL.replace('/api','')}/uploads/${cvPath.split('/').pop()}`;
-  window.open(cvUrl,'_blank');
+    // open cv in new Tab
+    const cvUrl = `${API_URL.replace("/api", "")}/uploads/${cvPath
+      .split("/")
+      .pop()}`;
+    window.open(cvUrl, "_blank");
   };
 
   // ==================== AUTH HELPER ====================
@@ -149,48 +149,59 @@ const HRAdmin = () => {
     setJobForm({ ...jobForm, [e.target.name]: e.target.value });
   };
 
-  const createJob = async (e) => {
-    e.preventDefault();
+const createJob = async (e) => {
+  e.preventDefault();
 
-    if (!jobForm.title || !jobForm.jobType || !jobForm.description) {
-      alert("يرجى ملء جميع الحقول المطلوبة");
-      return;
-    }
+  if (!jobForm.title || !jobForm.jobType || !jobForm.jobCategory || !jobForm.description) {
+    alert("يرجى ملء جميع الحقول المطلوبة");
+    return;
+  }
 
-    try {
-      const qualificationsArray = jobForm.qualifications
-        .split(",")
-        .map((q) => q.trim())
-        .filter((q) => q);
+  try {
+    const qualificationsArray = jobForm.qualifications
+      .split(",")
+      .map((q) => q.trim())
+      .filter((q) => q);
 
-      const response = await authenticatedFetch(`${API_URL}/jobs`, {
-        method: "POST",
-        body: JSON.stringify({
-          ...jobForm,
-          qualifications: qualificationsArray,
-        }),
+    const payload = {
+      title: jobForm.title,
+      job_type: jobForm.jobType,                    // VARCHAR(100) - required
+      job_type_category: jobForm.jobCategory,       // ENUM - required
+      description: jobForm.description,              // TEXT - required
+      qualifications: qualificationsArray,           // JSON - required (can be empty array)
+      is_active: true,   
+    };
+
+    console.log("📤 Sending payload:", payload); // ✅ Log what we're sending
+
+    const response = await authenticatedFetch(`${API_URL}/jobs`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+
+    if (!response) return;
+
+    if (response.ok) {
+      alert("تم إنشاء الوظيفة بنجاح!");
+      setJobForm({
+        title: "",
+        jobType: "",
+        jobCategory: "",
+        qualifications: "",
+        description: "",
       });
-
-      if (!response) return;
-
-      if (response.ok) {
-        alert("تم إنشاء الوظيفة بنجاح!");
-        setJobForm({
-          title: "",
-          jobType: "",
-          qualifications: "",
-          description: "",
-        });
-        loadJobs();
-      } else {
-        const error = await response.json();
-        alert(error.message || "فشل في إنشاء الوظيفة");
-      }
-    } catch (error) {
-      console.error("Error creating job:", error);
-      alert("خطأ في الخادم");
+      loadJobs();
+    } else {
+      const error = await response.json();
+      console.error("❌ Backend error response:", error); // ✅ Log full error
+      console.error("❌ Status:", response.status);
+      alert(error.message || error.error || "فشل في إنشاء الوظيفة");
     }
-  };
+  } catch (error) {
+    console.error("💥 Error creating job:", error);
+    alert("خطأ في الخادم");
+  }
+};
 
   const deactivateJob = async (id) => {
     if (!window.confirm("هل أنت متأكد من إيقاف هذه الوظيفة؟")) return;
@@ -429,15 +440,33 @@ const HRAdmin = () => {
                 className={styles.input}
                 required
               />
-              <input
-                type="text"
+              <select
                 name="jobType"
-                placeholder="نوع الوظيفة (مثال: دوام كامل)"
                 value={jobForm.jobType}
                 onChange={handleJobFormChange}
                 className={styles.input}
                 required
-              />
+              >
+                <option value="">اختر نوع الوظيفة</option>
+                <option value="full-time">دوام كامل</option>
+                <option value="part-time">دوام جزئي</option>
+                <option value="remote">عن بُعد</option>
+                <option value="hybrid">هجين</option>
+                <option value="contract">عقد</option>{" "}
+              </select>
+              <select
+                name="jobCategory"
+                value={jobForm.jobCategory}
+                onChange={handleJobFormChange}
+                className={styles.input}
+                required
+              >
+                <option value="">اختر نوع الوظيفة</option>
+                <option value="join">انضم للفريق</option>
+                <option value="contractor">مقاول</option>
+                <option value="supplier">مورد</option>
+              </select>
+
               <input
                 type="text"
                 name="qualifications"
@@ -473,9 +502,13 @@ const HRAdmin = () => {
                   <div key={job.id} className={styles.jobItem}>
                     <div className={styles.jobInfo}>
                       <h3>{job.title}</h3>
+
+                      {/* Show both job type and category */}
                       <p className={styles.jobType}>
-                        {job.job_type || job.jobType}
+                        {job.job_type || job.jobType} •{" "}
+                        {job.job_type_category || job.jobCategory}
                       </p>
+
                       <span
                         className={
                           job.is_active || job.isActive
@@ -494,6 +527,7 @@ const HRAdmin = () => {
                       >
                         إيقاف
                       </button>
+
                       <button
                         onClick={() => deleteJob(job.id)}
                         className={styles.deleteButton}
@@ -543,24 +577,24 @@ const HRAdmin = () => {
                         app.createdAt || app.created_at
                       ).toLocaleDateString("ar-EG")}
                     </p>
-                     {app.cv_path && (
-                <button
-                  onClick={() => downloadCV(app.cv_path)}
-                  className={styles.downloadCvButton}
-                  style={{
-                    backgroundColor: '#4CAF50',
-                    color: 'white',
-                    padding: '8px 16px',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    marginBottom: '10px',
-                    fontSize: '14px'
-                  }}
-                >
-                  📄 تحميل السيرة الذاتية
-                </button>
-              )}
+                    {app.cv_path && (
+                      <button
+                        onClick={() => downloadCV(app.cv_path)}
+                        className={styles.downloadCvButton}
+                        style={{
+                          backgroundColor: "#4CAF50",
+                          color: "white",
+                          padding: "8px 16px",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                          marginBottom: "10px",
+                          fontSize: "14px",
+                        }}
+                      >
+                        📄 تحميل السيرة الذاتية
+                      </button>
+                    )}
                     <div className={styles.appActions}>
                       <button
                         onClick={() =>

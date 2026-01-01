@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "/src/styles/homeHero.module.css";
-import whiteLogo from "/src/assets/mLogoW.png";
+import whiteLogo from "/src/assets/Logo.png";
 
 import bg1 from "/src/assets/hh1.jpg";
 import bg2 from "/src/assets/hh2.jpg";

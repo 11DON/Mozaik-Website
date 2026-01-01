@@ -1,0 +1,150 @@
+/* Container */
+.articlePage {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  direction: rtl; /* for Arabic text */
+}
+
+.articlePage h1 {
+  text-align: center;
+  margin-bottom: 3rem;
+  font-size: 2rem;
+}
+
+/* Article Grid */
+.mainArticle {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 columns */
+  gap: 2rem;
+  align-items: center; /* vertically center items */
+  margin-bottom: 3rem;
+}
+
+/* Text Column */
+.mainArticleCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: right; /* RTL alignment */
+}
+
+.mainArticleCard .title {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.mainArticleCard .describtion {
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+.dateby {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  font-size: 1rem;
+  color: #555;
+}
+
+.readMore {
+  width: fit-content;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-primary);
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.readMore:hover {
+  background-color: grey;
+}
+
+/* Image Column */
+.imgWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.imgWrapper img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 15px;
+  object-fit: cover;
+}
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 3rem 0;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 0.6rem 1.4rem;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.activeTab {
+  background: var(--color-primary);
+  color: white;
+  border-color: wheat;
+}
+
+
+.articlesList {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.articleCard {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  transition: transform 0.3s;
+}
+
+.articleCard:hover {
+  transform: translateY(-5px);
+}
+
+.articleCard img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.articleCard h3 {
+  padding: 1rem;
+  font-size: 1.2rem;
+}
+
+.articleCard p {
+  padding: 0 1rem 1.2rem;
+  font-size: 1rem;
+}
+
+/* Responsive: stack columns on small screens */
+@media (max-width: 768px) {
+  .mainArticle {
+    grid-template-columns: 1fr; /* single column */
+    gap: 1.5rem;
+  }
+
+  .dateby {
+    grid-template-columns: 1fr; /* stack author/date */
+  }
+
+  .mainArticleCard {
+    text-align: right; /* keep RTL */
+  }
+}

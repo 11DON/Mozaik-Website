@@ -1,5 +1,6 @@
 import styles from "/src/styles/contact.module.css";
 import { motion } from "framer-motion";
+
 export default function ContactSection() {
   return (
     <section className={styles.contact} id="contact">
@@ -10,12 +11,7 @@ export default function ContactSection() {
           استشارة مجانية
         </p>
 
-        
-{/* This is contact form to use it you need to: 
-1- https://myaccount.google.com/apppasswords
-2- Generate an app password for "Mail" and "Other (Custom name)".
-3- Use the generated password in your backend email sending service.
-*/}
+        {/* Contact Form */}
         <form
           className={styles.contactForm}
           onSubmit={async (e) => {
@@ -56,6 +52,7 @@ export default function ContactSection() {
             }
           }}
         >
+          {/* Name + Service */}
           <motion.div
             viewport={{ once: true }}
             whileInView={{
@@ -65,11 +62,21 @@ export default function ContactSection() {
             }}
           >
             <div className={styles.row}>
-              <input name="name" placeholder="الاسم" />
-              <input name="service" placeholder="الخدمة المطلوبة" />
+              <input name="name" placeholder="الاسم" required />
+              <select name="service" required>
+                <option value="">اختر الخدمة المطلوبة</option>
+                <option value="التشطيبات">التشطيبات</option>
+                <option value="التأسيس">التأثيث</option>
+                <option value="إعادة التأهيل">إعادة التأهيل</option>
+                <option value="خدمات الديكور">خدمات الديكور</option>
+                <option value="الترميم">الترميم</option>
+                <option value="التصميم الداخلي">التصميم الداخلي</option>
+                <option value="التصميم الخارجي">التصميم الخارجي</option>
+              </select>
             </div>
           </motion.div>
 
+          {/* City + Phone */}
           <motion.div
             viewport={{ once: true }}
             whileInView={{
@@ -79,10 +86,12 @@ export default function ContactSection() {
             }}
           >
             <div className={styles.row}>
-              <input name="city" placeholder="المدينة" />
-              <input name="phone" placeholder="رقم الجوال" />
+              <input name="city" placeholder="المدينة" required />
+              <input name="phone" placeholder="رقم الهاتف" required />
             </div>
           </motion.div>
+
+          {/* Project Description */}
           <motion.div
             viewport={{ once: true }}
             whileInView={{
@@ -91,8 +100,10 @@ export default function ContactSection() {
               transition: { duration: 1.3 },
             }}
           >
-            <textarea name="project" placeholder="وصف المشروع" />
+            <textarea name="project" placeholder="وصف المشروع" required />
           </motion.div>
+
+          {/* Submit Button */}
           <motion.div
             viewport={{ once: true }}
             whileInView={{

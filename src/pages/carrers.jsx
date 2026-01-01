@@ -6,9 +6,14 @@ import { useNavigate } from "react-router-dom";
 
 const API_URL = "http://localhost:5137/api";
 
+const JOB_TABS= [
+  { key: "join", label: "انضم للفريق" },
+  { key: "contractor", label: "مقاول" },
+  { key: "supplier", label: "مورد" },
+];
 const Careers = () => {
   const navigate = useNavigate();
-
+  const [activeTab,setActiveTab] = useState("join");
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,7 +48,9 @@ const Careers = () => {
     }
   };
 
-  
+  const filteredJobs = jobs.filter(
+    (job) => job.job_type_category ===activeTab
+  );
   // Loading state
   if (loading) {
     return (
@@ -66,10 +73,25 @@ const Careers = () => {
           </p>
         </div>
       </div>
-
+      <div className={styles.jobTabs}>
+      {JOB_TABS.map((tab)=> {
+        return (
+  <button
+        key={tab.key}
+        onClick={()=> setActiveTab(tab.key)}
+        className={`${styles.tabButton} ${
+          activeTab === tab.key? styles.activeTab:""
+        }`}
+        >
+          {tab.label}
+        </button>
+        )
+      
+      })}
+      </div>
       {/* Job Listings Grid */}
       <div className={styles.jobsSection}>
-        {jobs.length === 0 ? (
+        {filteredJobs.length === 0 ? (
           <div className={styles.noJobs}>
             <p className={styles.noJobsText}>
               لا توجد وظائف متاحة حالياً. تحقق مرة أخرى قريباً!
@@ -77,7 +99,7 @@ const Careers = () => {
           </div>
         ) : (
           <div className={styles.jobsGrid}>
-            {jobs.map((job) => (
+            {filteredJobs.map((job) => (
               <div key={job.id} className={styles.jobCard}>
                 <div className={styles.jobCardContent}>
                   <h3 className={styles.jobTitle}>{job.title}</h3>

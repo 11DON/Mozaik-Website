@@ -1,4 +1,4 @@
-import whiteLogo from "/src/assets/mLogoB.png";
+import whiteLogo from "/src/assets/LogoB.png";
 import styles from '../styles/footer.module.css';
 
 export default function Footer2() {

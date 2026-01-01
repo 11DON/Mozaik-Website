@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { FaPaintBrush, FaCamera } from "react-icons/fa";
 import { CgWebsite } from "react-icons/cg";
 import OurPreviousWork from "../components/ourPreviousWork";
+
 const workServicesItems = [
   {
     title: "تصميم واجهة المستخدم (UI)",
